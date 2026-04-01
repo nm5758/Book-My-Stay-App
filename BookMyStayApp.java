@@ -35,6 +35,7 @@ class BookingRequestQueue {
             r.display();
         }
     }
+
     void peekNextRequest() {
         System.out.println("\n🔎 Next Request to Process:");
 
@@ -47,7 +48,7 @@ class BookingRequestQueue {
         }
     }
 }
-public class BookingRequestQueue {
+public class UseCase5BookingRequestQueue {
 
     public static void main(String[] args) {
 
@@ -61,9 +62,8 @@ public class BookingRequestQueue {
         bookingQueue.addRequest(new Reservation("David", "Single Room"));
 
         bookingQueue.viewAllRequests();
-
         bookingQueue.peekNextRequest();
 
-        System.out.println("\n Note: No inventory updates happen in UC5.");
+        System.out.println("\n⚠️ Note: No inventory updates happen in UC5.");
     }
-} 
+}
