@@ -1,84 +1,116 @@
 import java.util.*;
-class AddOnService {
-    private String serviceName;
-    private double cost;
+class Reservation {
+    private String reservationId;
+    private String customerName;
+    private String roomType;
 
-    public AddOnService(String serviceName, double cost) {
-        this.serviceName = serviceName;
-        this.cost = cost;
+    public Reservation(String reservationId, String customerName, String roomType) {
+        this.reservationId = reservationId;
+        this.customerName = customerName;
+        this.roomType = roomType;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getReservationId() {
+        return reservationId;
     }
 
-    public double getCost() {
-        return cost;
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public String getRoomType() {
+        return roomType;
     }
 
     @Override
     public String toString() {
-        return serviceName + " (₹" + cost + ")";
+        return "Reservation ID: " + reservationId +
+               ", Customer: " + customerName +
+               ", Room Type: " + roomType;
     }
 }
-class AddOnServiceManager {
-    private Map<String, List<AddOnService>> reservationServicesMap = new HashMap<>();
-    public void addServices(String reservationId, List<AddOnService> services) {
 
-        reservationServicesMap
-                .computeIfAbsent(reservationId, k -> new ArrayList<>())
-                .addAll(services);
+class BookingHistory {
 
-        System.out.println("✅ Services added for Reservation ID: " + reservationId);
+    private List<Reservation> history = new ArrayList<>();
+
+    public void addReservation(Reservation reservation) {
+        history.add(reservation);
     }
-    public List<AddOnService> getServices(String reservationId) {
-        return reservationServicesMap.getOrDefault(reservationId, new ArrayList<>());
+
+    public List<Reservation> getAllReservations() {
+        return new ArrayList<>(history); 
     }
-    public double calculateTotalCost(String reservationId) {
-        double total = 0.0;
+}
 
-        List<AddOnService> services = reservationServicesMap.get(reservationId);
+class BookingReportService {
 
-        if (services != null) {
-            for (AddOnService service : services) {
-                total += service.getCost();
-            }
-        }
+    public void printAllBookings(List<Reservation> reservations) {
+        System.out.println("\n=== Booking History ===");
 
-        return total;
-    }
-    public void printServices(String reservationId) {
-        List<AddOnService> services = getServices(reservationId);
-
-        System.out.println("\nAdd-On Services for Reservation ID: " + reservationId);
-
-        if (services.isEmpty()) {
-            System.out.println("No services selected.");
+        if (reservations.isEmpty()) {
+            System.out.println("No bookings found.");
             return;
         }
 
-        for (AddOnService service : services) {
-            System.out.println("- " + service);
+        for (Reservation r : reservations) {
+            System.out.println(r);
+        }
+    }
+
+    public void generateRoomTypeReport(List<Reservation> reservations) {
+
+        Map<String, Integer> roomTypeCount = new HashMap<>();
+
+        for (Reservation r : reservations) {
+            roomTypeCount.put(
+                r.getRoomType(),
+                roomTypeCount.getOrDefault(r.getRoomType(), 0) + 1
+            );
         }
 
-        System.out.println("Total Add-On Cost: ₹" + calculateTotalCost(reservationId));
+        System.out.println("\n=== Room Type Summary Report ===");
+
+        for (String type : roomTypeCount.keySet()) {
+            System.out.println(type + " -> " + roomTypeCount.get(type) + " bookings");
+        }
+    }
+
+    public void findBookingsByCustomer(List<Reservation> reservations, String customerName) {
+
+        System.out.println("\n=== Bookings for Customer: " + customerName + " ===");
+
+        boolean found = false;
+
+        for (Reservation r : reservations) {
+            if (r.getCustomerName().equalsIgnoreCase(customerName)) {
+                System.out.println(r);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No bookings found for this customer.");
+        }
     }
 }
-public class UseCase7AddOnServiceSelection {
+
+public class UseCase8BookingHistoryReport {
 
     public static void main(String[] args) {
 
-        AddOnServiceManager serviceManager = new AddOnServiceManager();
-        String reservation1 = "DEL-12345";
-        String reservation2 = "STA-67890";
-        AddOnService breakfast = new AddOnService("Breakfast", 500);
-        AddOnService airportPickup = new AddOnService("Airport Pickup", 1200);
-        AddOnService extraBed = new AddOnService("Extra Bed", 800);
-        List<AddOnService> servicesForRes1 = Arrays.asList(breakfast, airportPickup);
-        List<AddOnService> servicesForRes2 = Arrays.asList(extraBed);
-        serviceManager.addServices(reservation1, servicesForRes1);
-        serviceManager.addServices(reservation2, servicesForRes2);
-        serviceManager.printServices(reservation1);
-        serviceManager.printServices(reservation2);
+        BookingHistory bookingHistory = new BookingHistory();
+        BookingReportService reportService = new BookingReportService();
+
+        bookingHistory.addReservation(new Reservation("DEL-11111", "Alice", "DELUXE"));
+        bookingHistory.addReservation(new Reservation("STA-22222", "Bob", "STANDARD"));
+        bookingHistory.addReservation(new Reservation("DEL-33333", "Charlie", "DELUXE"));
+        bookingHistory.addReservation(new Reservation("STA-44444", "Alice", "STANDARD"));
+
+        List<Reservation> reservations = bookingHistory.getAllReservations();
+
+        reportService.printAllBookings(reservations);
+        reportService.generateRoomTypeReport(reservations);
+        reportService.findBookingsByCustomer(reservations, "Alice");
     }
 }
