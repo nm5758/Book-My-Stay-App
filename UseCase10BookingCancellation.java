@@ -1,6 +1,6 @@
 import java.util.*;
 
-class UseCase10BookingCancellation {
+public class UseCase10BookingCancellation {
     static Map<String, Integer> inventory = new HashMap<>();
     static Map<String, String> bookings = new HashMap<>();
     static Stack<String> rollbackStack = new Stack<>();
